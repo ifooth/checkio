@@ -1,14 +1,33 @@
 # -*- coding: utf-8 -*-
 # Copyright 2015 IFOOTH
 # Author: Joe Lei <thezero12@hotmail.com>
-import copy
 
 
 def checkio(maze_map):
+    """
+    将起点标记为已经走过并压栈
+    while(栈非空):
+        从栈顶弹出一个点P
+
+        if(P这个点是终点):
+            break
+
+        否则延右，下，左，上四个方向探索相邻的点
+        if(和P相邻的点有路可走，并且没有被走过):
+            将相邻的点标记为已经走过并压栈，它的前驱就是P点
+
+    if(P点是终点):
+        打印P点的坐标
+
+        while(P点有前驱):
+            P点=P点的前驱
+            打印P点的坐标
+    else:
+        没有路线可以到达终点
+    """
     stack = []
-    maze = copy.deepcopy(maze_map)
-    predecessor = [[((-1, -1), 'Z')] * len(maze_map) for i in range(len(maze_map))]
-    maze[1][1] = 2
+    maze = {}
+    maze[(1, 1)] = {}
     stack.append((1, 1))
     move = {"S": (1, 0), "N": (-1, 0), "W": (0, -1), "E": (0, 1)}
     while stack:
@@ -17,16 +36,17 @@ def checkio(maze_map):
             break
         for k, v in move.items():
             cur = (p[0] + v[0], p[1] + v[1])
-            if (maze_map[cur[0]][cur[1]] == 0 and maze[cur[0]][cur[1]] != 2):
+            if maze_map[cur[0]][cur[1]] == 0 and cur not in maze:
                 stack.append(cur)
-                predecessor[cur[0]][cur[1]] = (p, k)
-                maze[cur[0]][cur[1]] = 2
+                maze[cur] = {}
+                maze[cur]['predecessor'] = p
+                maze[cur]['direction'] = k
     route = ''
     if p == (10, 10):
-        route += predecessor[p[0]][p[1]][1]
-        while predecessor[p[0]][p[1]][0] != (-1, -1):
-            route += predecessor[p[0]][p[1]][1]
-            p = predecessor[p[0]][p[1]][0]
+        route += maze[p]['direction']
+        while 'predecessor' in maze[p]:
+            route += maze[p]['direction']
+            p = maze[p]['predecessor']
     else:
         print 'no path available'
     route = route[::-1]
