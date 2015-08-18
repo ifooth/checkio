@@ -27,7 +27,6 @@ def check_connection(network, first, second):
         for i in graph[u].difference(P):
             Q.add(i)
             P[i] = u
-
     return False
 
 

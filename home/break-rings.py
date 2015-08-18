@@ -1,36 +1,38 @@
 # -*- coding: utf-8 -*-
 # Copyright 2015 IFOOTH
 # Author: Joe Lei <thezero12@hotmail.com>
-import copy
 
 
 def break_rings(rings):
-    vertex = {}
-    rings = list(rings)
+    # 转换成图
+    graph = {}
     for i in rings:
-        for j in i:
-            vertex[j] = vertex.get(j, 0) + 1
-    _break = 0
-    while True:
-        if sum(vertex.values()) == 0:
+        a, b = i
+        if a not in graph:
+            graph[a] = {b}
+        else:
+            graph[a].add(b)
+        if b not in graph:
+            graph[b] = {a}
+        else:
+            graph[b].add(a)
+
+    # 找出最少编点做起点，记录，压栈
+    start = min(graph, key=lambda x: len(graph[x]))
+    P, Q = {}, set()
+    P[start] = None
+    Q.add(start)
+    while Q:
+        u = Q.pop()
+        for v in graph[u].difference(P):
+            P[v] = u
+        _graph = filter(lambda x: x not in P, graph)
+        if not _graph:
             break
-        _min = min(filter(lambda x: vertex[x] >= 1, vertex), key=lambda x: vertex[x])
-        _need_delete = set()
-        for i in rings:
-            if _min in i:
-                _need_delete |= i
-        _need_delete -= {_min}
-        for other in _need_delete:
-            for j in copy.deepcopy(rings):
-                if _min not in j and other in j:
-                    o = j - {other}
-                    o = o.pop()
-                    vertex[o] -= 1
-                    rings.remove(j)
-            vertex[_min] -= 1
-            vertex.pop(other)
-            _break += 1
-    return _break
+        start = min(_graph, key=lambda x: len(graph[x].difference(P)))
+        P[start] = None
+        Q.add(start)
+    return len(filter(lambda x: P[x] is not None, P))
 
 
 if __name__ == '__main__':
