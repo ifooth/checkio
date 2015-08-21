@@ -16,7 +16,7 @@ setup(
     description="checkio solution",
     long_description=long_description,
     license="IFOOTH",
-    keywords="python checkio",
+    keywords="checkio",
     url="http://github.com/ifooth/checkio",
     classifiers=[
         'Programming Language :: Python',
